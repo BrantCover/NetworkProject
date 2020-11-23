@@ -1,0 +1,334 @@
+import java.awt.event.*;
+import javax.swing.*;
+import javax.swing.ImageIcon;
+import java.io.File;
+import java.io.IOException;
+import java.awt.Desktop;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import java.awt.GridLayout;
+import java.util.Scanner;
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
+
+public class MyFrame extends JFrame implements ActionListener {
+
+    JMenuBar menuBar;
+
+    // Top Menu Bar
+    JMenu fileMenu;
+    JMenu deviceMenu;
+    JMenu connectMenu;
+    JMenu resetMenu;
+    JMenu exitMenu;
+
+    // Drop Downs
+    // File
+    JMenuItem saveItem;
+    JMenuItem loadItem;
+    JMenuItem exitItem;
+    JMenuItem helpItem;
+    JMenuItem listItem;
+    // Add Device
+    JMenuItem addPC;
+    JMenuItem addServer;
+    JMenuItem addHub;
+    //Connections
+    JMenuItem draw;
+    JMenuItem stop;
+
+    // Icons
+    // Add Device
+    ImageIcon pcIcon;
+    ImageIcon serverIcon;
+    ImageIcon hubIcon;
+
+    // Help file
+    File helpFile;
+    Desktop desktop;
+
+    JFrame frame = new JFrame();
+
+    //Panels
+    JPanel pcPanel = new JPanel();
+    JPanel serverPanel = new JPanel();
+    JPanel hubPanel = new JPanel();
+
+    GridLayout layout;
+
+    Boolean canDraw=false;
+        public static void main(String[] args) {
+            new LineCreator();
+        }
+        public MyFrame() {
+            EventQueue.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+                    } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
+                        ex.printStackTrace();
+                    }
+                }
+            });
+
+        //pcPanel.setBackground(Color.RED); //only used for debugging
+        pcPanel.setBounds(0 ,0 ,200 ,400);
+        //serverPanel.setBackground(Color.BLUE); //only used for debugging
+        serverPanel.setBounds(0, 250, 200 ,400);
+        //hubPanel.setBackground(Color.GREEN); //only used for debugging
+        hubPanel.setBounds(0, 500, 200 ,400);
+
+        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.setSize(800, 400);
+        this.setLayout(new GridLayout(4,1));
+
+        this.setVisible(true);
+        this.add(pcPanel);
+        this.add(serverPanel);
+        this.add(hubPanel);
+
+        // Load Images
+        pcIcon = new ImageIcon("images/PC_Icon.png");
+        serverIcon = new ImageIcon("images/Server_Icon.png");
+        hubIcon = new ImageIcon("images/Hub_Icon.png");
+
+        // Load Files
+        helpFile = new File("files/help.txt");
+        desktop = Desktop.getDesktop();
+
+        // Create a Menu Bar
+        menuBar = new JMenuBar();
+
+        // Define the Menu
+        // Menu Top Bar
+        fileMenu = new JMenu("File");
+        deviceMenu = new JMenu("Add Device");
+        connectMenu = new JMenu("Edit Connections");
+        resetMenu = new JMenu("Reset");
+
+        // Drop down menu items
+        // Drop down menu items for file
+        saveItem = new JMenuItem("Save");
+        loadItem = new JMenuItem("Load");
+        helpItem = new JMenuItem("Help");
+        listItem = new JMenuItem("List");
+        exitItem = new JMenuItem("Exit");
+
+        // Drop down menu items for devices
+        addPC = new JMenuItem("Add PC");
+        addServer = new JMenuItem("Add Server");
+        addHub = new JMenuItem("Add Hub");
+
+        // Drop Down menu items for connections
+        draw = new JMenuItem("Draw");
+        stop = new JMenuItem("Stop Drawing");
+
+        // Create Listeners for all creations
+        // Listeners for File Menu
+        saveItem.addActionListener(this);
+        loadItem.addActionListener(this);
+        helpItem.addActionListener(this);
+        listItem.addActionListener(this);
+        exitItem.addActionListener(this);
+        // Listeners for Device Menu
+        addPC.addActionListener(this);
+        addServer.addActionListener(this);
+        addHub.addActionListener(this);
+        //Listeners for Connections
+        draw.addActionListener(this);
+        stop.addActionListener(this);
+
+        // Add Icons
+        // Device Menu Icons
+        addPC.setIcon(pcIcon);
+        addServer.setIcon(serverIcon);
+        addHub.setIcon(hubIcon);
+
+        // Hotkeys
+        // Top menu bar hotkeys
+        fileMenu.setMnemonic(KeyEvent.VK_F); // Alt + f for file
+        deviceMenu.setMnemonic(KeyEvent.VK_A); // Alt + d for add device
+        connectMenu.setMnemonic(KeyEvent.VK_C); // Alt + c for edit connections
+        resetMenu.setMnemonic(KeyEvent.VK_R); // Alt + R for reset options
+
+        // Edit menu hotkeys
+        saveItem.setMnemonic(KeyEvent.VK_S); // S for save
+        loadItem.setMnemonic(KeyEvent.VK_L); // L for load
+        helpItem.setMnemonic(KeyEvent.VK_H); // H for help
+        listItem.setMnemonic(KeyEvent.VK_I); // I for List
+        exitItem.setMnemonic(KeyEvent.VK_E); // E for exit
+
+        // Load in all creations
+        // Add drop down for File Menu
+        fileMenu.add(saveItem);
+        fileMenu.add(loadItem);
+        fileMenu.add(helpItem);
+        fileMenu.add(listItem);
+        fileMenu.add(exitItem);
+        // Add drop down for Device Menu
+        deviceMenu.add(addPC);
+        deviceMenu.add(addServer);
+        deviceMenu.add(addHub);
+        // Add drop down for Connections
+        connectMenu.add(draw);
+        connectMenu.add(stop);
+
+        // Add Menu Top Bar
+        menuBar.add(fileMenu);
+        menuBar.add(deviceMenu);
+        menuBar.add(connectMenu);
+        menuBar.add(resetMenu);
+
+        this.add(new TestPane());
+        this.pack();
+        this.setLocationRelativeTo(null);
+        this.setJMenuBar(menuBar);
+        this.setVisible(true);   
+    }
+    
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        //Draw abilities
+        if(e.getSource()==draw){    // Makes it draw
+            canDraw=true;
+    
+        }
+        if(e.getSource()==stop) {    // Makes it stop drawing
+                canDraw=false;
+    }
+        //File menu
+        if (e.getSource() == saveItem) {
+            System.out.println("Save file");
+        }
+        if (e.getSource() == loadItem) {
+            System.out.println("Load file");
+        }
+        if (e.getSource() == helpItem) {
+            if (Desktop.isDesktopSupported()) {
+                try {
+                    File myFile = new File("NetworkProjectV4\\files\\help.txt");
+                    Desktop.getDesktop().open(myFile);
+                } catch (IOException ex) {
+                    }
+                }
+            }
+            if (e.getSource() == listItem) {
+                System.out.println("Load List");
+            }
+            if(e.getSource()==exitItem) {
+                System.exit(0);
+            }
+
+            //Add Devices
+        if (e.getSource() == addPC) {
+            System.out.println("Add PC");
+            Scanner pcDetails = new Scanner(System.in);
+            System.out.println("Enter PC Details");
+            String pcInfo = pcDetails.nextLine();
+            ImageIcon image1 = new ImageIcon("NetworkProjectV4\\images\\PC_Icon.png");
+            JLabel label1 = new JLabel();
+            label1.setIcon(image1);
+            label1.setText(pcInfo);
+            label1.setHorizontalTextPosition(JLabel.CENTER);
+            label1.setVerticalTextPosition(JLabel.BOTTOM);
+            pcPanel.add(label1);
+            this.repaint();
+            this.validate();
+            
+            }
+
+        if (e.getSource() == addServer) {
+            System.out.println("Add Server");
+            Scanner serverDetails = new Scanner(System.in);
+            System.out.println("Enter Server Details");
+            String serverInfo = serverDetails.nextLine();
+            ImageIcon image2 = new ImageIcon("NetworkProjectV4\\images\\Server_Icon.png");
+            JLabel label2 = new JLabel();
+            label2.setIcon(image2);
+            label2.setText(serverInfo);
+            label2.setHorizontalTextPosition(JLabel.CENTER);
+            label2.setVerticalTextPosition(JLabel.BOTTOM);
+            serverPanel.add(label2);
+            this.repaint();
+            this.validate();
+        }
+
+        if (e.getSource() == addHub) {
+            System.out.println("Add Hub");
+            Scanner hubDetails = new Scanner(System.in);
+            System.out.println("Enter Server Details");
+            String hubInfo = hubDetails.nextLine();
+            ImageIcon image3 = new ImageIcon("NetworkProjectV4\\images\\Hub_Icon.png");
+            JLabel label3 = new JLabel();
+            label3.setIcon(image3);
+            label3.setText(hubInfo);
+            label3.setHorizontalTextPosition(JLabel.CENTER);
+            label3.setVerticalTextPosition(JLabel.BOTTOM);
+            hubPanel.add(label3);
+            this.repaint();
+            this.validate();
+        }
+    }    
+
+    public class TestPane extends JPanel {
+
+        private List<List<Point>> points;
+
+        public TestPane() {
+            points = new ArrayList<>(25);
+            MouseAdapter ma = new MouseAdapter() {
+
+                private List<Point> currentPath;
+
+                @Override
+                public void mousePressed(MouseEvent e) {
+                    currentPath = new ArrayList<>(25);
+                    currentPath.add(e.getPoint());
+
+                    if(canDraw){
+                        points.add(currentPath);
+                    }
+                }
+
+                @Override
+                public void mouseDragged(MouseEvent e) {
+                    Point dragPoint = e.getPoint();
+                    currentPath.add(dragPoint);
+                    repaint();
+                }
+
+                @Override
+                public void mouseReleased(MouseEvent e) {
+                    currentPath = null;
+                }
+
+            };
+
+            addMouseListener(ma);
+            addMouseMotionListener(ma);
+        }
+
+        @Override
+        public Dimension getPreferredSize() {
+            return new Dimension(1000, 1000);
+        }
+
+        protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                Graphics2D g2d = (Graphics2D) g.create();
+                for (List<Point> path : points) {
+                    Point from = null;
+                    for (Point p : path) {
+                        if (from != null) {
+                            g2d.drawLine(from.x, from.y, p.x, p.y);
+                        }
+                        from = p;
+                    }
+                }
+                g2d.dispose();
+        }
+
+    }
+}
